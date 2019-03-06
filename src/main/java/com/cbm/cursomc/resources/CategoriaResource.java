@@ -11,7 +11,7 @@ import com.cbm.cursomc.domain.Categoria;
 
 @RestController
 @RequestMapping(value ="/categorias")
-public class CategoriaResourcee {
+public class CategoriaResource {
 
 	@RequestMapping(method=RequestMethod.GET)
 	public List<Categoria> listar() {
