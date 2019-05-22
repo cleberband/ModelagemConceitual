@@ -11,40 +11,41 @@ import com.cbm.cursomc.domain.ItemPedido;
 import com.cbm.cursomc.domain.PagamentoComBoleto;
 import com.cbm.cursomc.domain.Pedido;
 import com.cbm.cursomc.domain.enums.EstadoPagamento;
-import com.cbm.cursomc.repositories.ClienteRepository;
 import com.cbm.cursomc.repositories.ItemPedidoRepository;
 import com.cbm.cursomc.repositories.PagamentoRepository;
 import com.cbm.cursomc.repositories.PedidoRepository;
-import com.cbm.cursomc.repositories.ProdutoRepository;
 import com.cbm.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
 public class PedidoService {
-	
+
 	@Autowired
 	private PedidoRepository repo;
-	
+
 	@Autowired
 	private BoletoService boletoService;
-	
+
 	@Autowired
 	private PagamentoRepository pagamentoRepository;
-	
+
 	@Autowired
 	private ItemPedidoRepository itemPedidoRepository;
-	
+
 	@Autowired
 	private ProdutoService produtoService;
-	
+
 	@Autowired
 	private ClienteService clienteService;
-	
+
+	@Autowired
+	private EmailService emailService;
+
 	public Pedido find(Integer id) {
 		Optional<Pedido> obj = repo.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Pedido.class.getName()));
 	}
-	
+
 	@Transactional
 	public Pedido insert(Pedido obj) {
 		obj.setId(null);
@@ -65,7 +66,8 @@ public class PedidoService {
 			ip.setPedido(obj);
 		}
 		itemPedidoRepository.saveAll(obj.getItens());
-		System.out.println(obj);
+		emailService.sendOrderConfirmationEmail(obj);
+		// System.out.println(obj);
 		return obj;
 	}
 }
